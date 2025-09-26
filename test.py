@@ -1,13 +1,28 @@
 import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+
 # Read the JSON file with Population Data
 populationData = pd.read_json("populationData.json")
 healthCareFacilities = pd.read_json("healthCare.json") 
+geographicalArea = gpd.read_file("geographicalArea.geojson")
 
-#  Total Population Density
-land_mass = 271
-total_population = populationData.loc[populationData["race_category"] == "Total Population", "population"].iloc[0]
-totalPopulationDensity = int(total_population / land_mass)
-print("Total Population Density:", totalPopulationDensity)
+# Convert Data into a more readable format
+df_population = pd.DataFrame(populationData)
+df_geoData = gpd.GeoDataFrame(geographicalArea) # Adds Geometary Spatial Data Column
 
-# The Health Care Facatlites
-print("Health Care Facilities Data:", healthCareFacilities) 
+# Convert to GeoDataFrame
+facilities_gdf = gpd.GeoDataFrame(
+    healthCareFacilities,
+    geometry=gpd.points_from_xy(healthCareFacilities.Longitude, healthCareFacilities.Latitude),
+    crs="EPSG:4326"
+)
+# Convert facilities to match county CRS
+facilities_gdf = facilities_gdf.to_crs(geographicalArea.crs)
+
+# Plot the geographical area and healthcare facilities
+ax = geographicalArea.plot(edgecolor='black', facecolor='none')
+facilities_gdf.plot(ax=ax, color='red', markersize=50)
+
+plt.show()
