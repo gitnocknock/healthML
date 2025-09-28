@@ -4,6 +4,9 @@ import numpy as np
 from sklearn.cluster import DBSCAN
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+import folium
+from folium.plugins import MarkerCluster
+
 
 # Load data
 healthCareFacilities = pd.read_json("data/healthCare.json")
@@ -78,5 +81,6 @@ cluster_handle = mlines.Line2D([], [], color='blue', marker='o', linestyle='None
 underserved_handle = mlines.Line2D([], [], color='red', marker='o', linestyle='None', markersize=10, label='Potential Underserved')
 plt.legend(handles=[cluster_handle, underserved_handle])
 
+# Plot the map
 plt.title("DeKalb County Population Choropleth with Healthcare Facility Clusters")
 plt.show()
